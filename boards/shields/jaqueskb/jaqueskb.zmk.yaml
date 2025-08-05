@@ -1,0 +1,12 @@
+file_format: "1"
+id: jaqueskb
+name: jaqueskb
+type: shield
+url: https://github.com/Jaquees/zmk-config-JaquesKB.git
+requires: [pro_micro]
+#exposes: [i2c_oled]
+features:
+  - keys
+siblings:
+  - jaqueskb_left
+  - jaqueskb_right

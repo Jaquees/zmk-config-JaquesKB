@@ -20,6 +20,4 @@
 ---
 include:
   - board: nrf52840dk_nrf52840
-    shield: jaqueskb_left
-  - board: nrf52840dk_nrf52840
-    shield: jaqueskb_right
+    shield: jaqueskb

@@ -1,4 +1,6 @@
 #include <dt-bindings/zmk/matrix_transform.h>
+#include "jaqueskb_left.overlay"
+#include "jaqueskb_right.overlay"
 
 / {
     chosen {    

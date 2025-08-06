@@ -1,5 +1,5 @@
 file_format: "1"
-id: zmk-config-JaquesKB
+id: jaqueskb
 name: JaquesKB
 type: shield
 url: https://github.com/Jaquees/zmk-config-JaquesKB.git

@@ -8,5 +8,5 @@ exposes: [i2c_oled]
 features:
   - keys
 siblings:
-  - jaqueskb_left
-  - jaqueskb_right
+  - jaqueskb_left.overlay
+  - jaqueskb_right.overlay

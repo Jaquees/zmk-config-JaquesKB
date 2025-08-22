@@ -3,7 +3,7 @@ manifest:
     revision: main
   remotes:
     - name: zmkfirmware
-      url-base: https://github.com/zmkfirmware/zmk
+      url-base: https://github.com/zmkfirmware
     - name: zmk-config-JaquesKB
       url-base: https://github.com/Jaquees/zmk-config-JaquesKB
     # Additional modules containing boards/shields/custom code can be listed here as well

@@ -1,5 +1,0 @@
-config SHIELD_JAQUESKB_LEFT
-    def_bool $(shields_list_contains,jaqueskb_left)
-
-config SHIELD_JAQUESKB_RIGHT
-    def_bool $(shields_list_contains,jaqueskb_right)

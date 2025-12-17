@@ -1,19 +1,11 @@
 manifest:
-  defaults:
-    revision: main 
   remotes:
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
-    - name: zmk-config-JaquesKB
-      url-base: https://github.com/Jaquees/zmk-config-JaquesKB
-    # Additional modules containing boards/shields/custom code can be listed here as well
-    # See https://docs.zephyrproject.org/3.2.0/develop/west/manifest.html#projects
   projects:
     - name: zmk
       remote: zmkfirmware
-      import: app/west.yml
-    - name: zmk-config-JaquesKB
-      remote: zmk-config-JaquesKB
       revision: main
+      import: app/west.yml
   self:
     path: config

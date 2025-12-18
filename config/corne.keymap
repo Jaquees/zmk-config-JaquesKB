@@ -8,6 +8,14 @@
 #include <dt-bindings/zmk/keys.h>
 
 / {
+    
+    combos {
+            compatible = "zmk,combos";
+            combo_disconnect {
+                timeout-ms = <500>;
+                key-positions = <13 19 16>;
+                bindings = <&bt BT_CLR>;
+            };
     keymap {
         compatible = "zmk,keymap";
 

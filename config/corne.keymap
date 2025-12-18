@@ -8,11 +8,12 @@
 #include <dt-bindings/zmk/keys.h>
 
 / {
+    
     combos {
         compatible = "zmk,combos";
         combo_bt_clear {
           timeout-ms = <500>;
-          key-positions = <12 15 18>;  /* LSHIFT, D, LCTRL */
+          key-positions = <12 15 18>;
           bindings = <&bt BT_CLR>;
         };
       };

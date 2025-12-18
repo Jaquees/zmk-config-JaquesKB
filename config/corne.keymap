@@ -24,7 +24,7 @@
                 &kp TAB     &kp Q     &kp W     &kp E     &kp R     &kp T                   &kp Y      &kp U      &kp I      &kp O      &kp P      &kp SQT
                 &kp LSHIFT  &kp A     &kp S     &kp D     &kp F     &kp G          &kp ESC  &kp H      &kp J      &kp K      &kp L      &kp SEMI   &kp Q 
                 &kp LCTRL   &kp Z     &kp X     &kp C     &kp V     &kp B          &kp ESC  &kp N      &kp M      &kp X      &kp C      &kp GT     &kp B 
-                &kp RWIN    &kp LALT  &bt BT_CLR  &kp FSLH  &kp LBKT  &kp BSPC                &kp Q      &kp Z      &kp X      &kp C          
+                &kp RWIN    &kp LALT  &bt BT_CLR  &kp SPACE  &kp LBKT  &kp BSPC                &kp Q      &kp Z      &kp X      &kp C          
             >;
         };
     };

@@ -12,25 +12,40 @@
     keymap {
         compatible = "zmk,keymap";
 
-         default_layer { // Layer 0
-        // | SW1  | SW2  | SW3  | SW4  | SW5  | SW6  |                 | SW6  | SW5  | SW4  | SW3  | SW2  | SW1  |
-        // | SW7  | SW8  | SW9  | SW10 | SW11 | SW12 |                 | SW12 | SW11 | SW10 | SW9  | SW8  | SW7  |
-        // | SW13 | SW14 | SW15 | SW16 | SW17 | SW18 |          | SW19 | SW18 | SW17 | SW16 | SW15 | SW14 | SW13 |
-        // | SW19 | SW20 | SW21 | SW22 | SW23 | SW24 |          | SW26 | SW25 | SW24 | SW23 | SW22 | SW21 | SW20 |
-        // | SW25 | SW26 | SW27 | SW28 | SW29 | SW30 |                 | SW30 | SW29 | SW28 | SW27 |
-        
+        /* LAYER 0: BASE */
+        default_layer {
             bindings = <
-                &kp ESC     &kp N1    &kp N2    &kp N3    &kp N4    &kp N5                  &kp N6     &kp N7     &kp N8     &kp N9     &kp N0     &kp BSPC
-                &kp TAB     &kp Q     &kp W     &kp E     &kp R     &kp T                   &kp Y      &kp U      &kp I      &kp O      &kp P      &kp SQT
-                &kp LSHIFT  &kp A     &kp S     &kp D     &kp F     &kp G          &kp ESC  &kp H      &kp J      &kp K      &kp L      &kp SEMI   &kp Q 
-                &kp LCTRL   &kp Z     &kp X     &kp C     &kp V     &kp B          &kp ESC  &kp N      &kp M      &kp X      &kp C      &kp GT     &kp B 
-                &kp RWIN    &kp LALT  &bt BT_CLR  &kp SPACE  &kp LBKT  &kp BSPC                &kp Q      &kp Z      &kp X      &kp C          
+                &kp ESC   &kp N1 &kp N2 &kp N3   &kp N4   &kp N5                     &trans &trans &trans &trans &trans &trans
+                &kp TAB   &kp Q  &kp W  &kp E    &kp R    &kp T                      &trans &trans &trans &trans &trans &trans
+                &kp LSHFT &kp A  &kp S  &kp D    &kp F    &kp G                      &trans &trans &trans &trans &trans &trans
+                &kp LCTRL &kp Z  &kp X  &kp C    &kp V    &kp LPAR                   &trans &trans &trans &trans &trans &trans
+                                &mo 2    &mo 1    &kp LALT &kp SPACE             &trans &trans &trans &trans
+            >; 
+        };
+
+        /* LAYER 1: TESTE (Polegar Meio) */
+        lower_layer {
+            bindings = <
+                &kp GRAVE &kp F1   &kp F2   &kp F3    &kp F4   &kp F5                     &trans &trans &trans &trans &trans &trans
+                &trans    &trans   &trans   &kp RET   &trans   &kp RPAR                   &trans &trans &trans &trans &trans &trans
+                &trans    &trans   &trans   &kp BSPC  &trans   &kp LBKT                   &trans &trans &trans &trans &trans &trans
+                &trans    &trans   &trans   &trans    &trans   &kp LBRC                   &trans &trans &trans &trans &trans &trans
+                                        &trans    &trans   &trans        &trans &trans &trans &trans &trans
+            >;
+        };
+
+        /* LAYER 2: BLUETOOTH E MEDIA (Polegar Esquerda) */
+        raise_layer {
+            bindings = <
+                &bt BT_CLR &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4             &trans &trans &trans &trans &trans &trans
+                &trans     &trans       &kp C_VOL_UP &trans       &trans       &trans                   &trans &trans &trans &trans &trans &trans
+                &trans     &trans       &kp C_VOL_DN &trans       &trans       &trans                   &trans &trans &trans &trans &trans &trans
+                &trans     &trans       &kp C_MUTE   &trans       &trans       &trans                   &trans &trans &trans &trans &trans &trans
+                                                     &trans       &trans       &trans     &trans &trans &trans &trans &trans
             >;
         };
     };
 };
-
-
 //For new Layers
     // -----------------------------------------------------------------------------------------
     // |      |     |     |     |     |     |   |     |     |     |     |     |      |

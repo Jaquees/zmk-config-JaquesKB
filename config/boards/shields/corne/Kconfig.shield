@@ -1,5 +1,0 @@
-config SHIELD_JKB_LEFT
-    def_bool $(shields_list_contains, jkb_left)
-
-config SHIELD_JKB_RIGHT
-    def_bool $(shields_list_contains, jkb_right)

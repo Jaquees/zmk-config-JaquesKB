@@ -4,52 +4,84 @@ Repositório de configuração e documentação do firmware **ZMK (Zephyr Mechan
 
 ---
 
+## Sumário
+1. [Visão Geral do Projeto](#1-visão-geral-do-projeto)
+2. [Estrutura do Repositório e Links dos Arquivos](#2-estrutura-do-repositório-e-links-dos-arquivos)
+3. [Funcionamento do Hardware e Matriz de Pinos](#3-funcionamento-do-hardware-e-matriz-de-pinos)
+4. [Funcionamento do Keymap (Layers 0, 1 e 2)](#4-funcionamento-do-keymap-layers-0-1-e-2)
+5. [Ponto Atual do Projeto (Status)](#5-ponto-atual-do-projeto-status)
+6. [Como Compilar e Gravar o Firmware](#6-como-compilar-e-gravar-o-firmware)
+
+---
+
 ## 1. Visão Geral do Projeto
 
-O **JaquesKB (`Jkb`)** é um teclado mecânico dividido de **60 teclas** (30 teclas no lado esquerdo + 30 teclas no lado direito), construído a partir da estrutura base de um shield *Corne*, porém expandido para uma matriz de **5 linhas por 13 colunas**.
+O **JaquesKB (`Jkb`)** é um teclado mecânico dividido de **60 teclas** (30 teclas no lado esquerdo + 30 teclas no lado direito), construído com uma matriz lógica de **5 linhas por 13 colunas** ([`jkb.dtsi`](config/boards/shields/jkb/jkb.dtsi)).
 
 ### Especificações Principais
-- **Firmware:** [ZMK Firmware](https://zmk.dev/) (baseado no RTOS Zephyr)
-- **Controladoras:** 2x `nice!nano` (nRF52840) — comunicação sem fio via Bluetooth (BLE)
-- **Topologia Split:**
+- **Firmware:** [ZMK Firmware](https://zmk.dev/) (baseado no RTOS Zephyr, configurado em [`config/west.yml`](config/west.yml))
+- **Controladoras:** 2x `nice_nano_v2` (nRF52840) — comunicação sem fio via Bluetooth (BLE), definidas em [`build.yaml`](build.yaml)
+- **Topologia Split ([`Kconfig.defconfig`](config/boards/shields/jkb/Kconfig.defconfig)):**
   - **Lado Esquerdo (`jkb_left`):** Central (Mestre) — conecta-se ao computador via USB ou Bluetooth e recebe os sinais do lado direito.
   - **Lado Direito (`jkb_right`):** Periférico (Escravo) — envia os pressionamentos de tecla via BLE para o lado esquerdo.
 - **Total de Teclas:** 60 teclas (30 esquerda + 30 direita)
 - **Direção dos Diodos:** `col2row` (Coluna para Linha)
-- **Gerenciamento de Energia:** Deep Sleep habilitado e potência de transmissão Bluetooth aumentada para `+8 dBm` (`CONFIG_BT_CTLR_TX_PWR_PLUS_8=y`) para maior estabilidade entre as metades.
+- **Gerenciamento de Energia ([`jkb_left.conf`](config/boards/shields/jkb/jkb_left.conf) / [`jkb_right.conf`](config/boards/shields/jkb/jkb_right.conf)):**
+  - Tempo de inatividade (*Idle*): 30 segundos (`CONFIG_ZMK_IDLE_TIMEOUT=30000`)
+  - Modo *Deep Sleep*: 15 minutos (`CONFIG_ZMK_IDLE_SLEEP_TIMEOUT=900000`)
+  - Potência de transmissão Bluetooth aumentada para `+8 dBm` (`CONFIG_BT_CTLR_TX_PWR_PLUS_8=y`) para máxima estabilidade entre as metades.
 
 ---
 
-## 2. Estrutura do Repositório
+## 2. Estrutura do Repositório e Links dos Arquivos
+
+Clique em qualquer arquivo na tabela abaixo para abrir diretamente o código correspondente:
+
+| Arquivo | Caminho no Repositório | Função no Projeto |
+| :--- | :--- | :--- |
+| **`build.yml`** | [`.github/workflows/build.yml`](.github/workflows/build.yml) | Pipeline do GitHub Actions para compilar automaticamente os arquivos `.uf2`. |
+| **`build.yaml`** | [`build.yaml`](build.yaml) | Matriz de compilação (`nice_nano_v2` + `jkb_left`, `jkb_right` e `settings_reset`). |
+| **`module.yml`** | [`zephyr/module.yml`](zephyr/module.yml) | Declaração de módulo do Zephyr para localizar os shields customizados na raiz. |
+| **`west.yml`** | [`config/west.yml`](config/west.yml) | Manifesto do West que importa a versão principal do ZMK Firmware. |
+| **`jkb.keymap`** | [`config/jkb.keymap`](config/jkb.keymap) | Mapa de teclas completo (Layers 0, 1 e 2) adaptado para ABNT2. |
+| **`Kconfig.shield`** | [`config/boards/shields/jkb/Kconfig.shield`](config/boards/shields/jkb/Kconfig.shield) | Registra os identificadores dos shields `SHIELD_JKB_LEFT` e `SHIELD_JKB_RIGHT`. |
+| **`Kconfig.defconfig`** | [`config/boards/shields/jkb/Kconfig.defconfig`](config/boards/shields/jkb/Kconfig.defconfig) | Define o nome `"Jkb"`, ativa `ZMK_SPLIT` e define o lado esquerdo como Central. |
+| **`jkb.dtsi`** | [`config/boards/shields/jkb/jkb.dtsi`](config/boards/shields/jkb/jkb.dtsi) | Define a matriz lógica (`5x13`), direção dos diodos (`col2row`) e coordenadas `RC(row,col)`. |
+| **`jkb_left.overlay`** | [`config/boards/shields/jkb/jkb_left.overlay`](config/boards/shields/jkb/jkb_left.overlay) | Pinagem física (GPIOs) das 6 colunas e 5 linhas da metade esquerda. |
+| **`jkb_right.overlay`** | [`config/boards/shields/jkb/jkb_right.overlay`](config/boards/shields/jkb/jkb_right.overlay) | Pinagem física (GPIOs) das 7 colunas e 5 linhas da metade direita + `col-offset = <6>`. |
+| **`jkb_left.conf`** | [`config/boards/shields/jkb/jkb_left.conf`](config/boards/shields/jkb/jkb_left.conf) | Configurações de energia, Bluetooth (`+8 dBm`) e HID da metade esquerda. |
+| **`jkb_right.conf`** | [`config/boards/shields/jkb/jkb_right.conf`](config/boards/shields/jkb/jkb_right.conf) | Configurações de energia, Bluetooth (`+8 dBm`) e HID da metade direita. |
+| **`jkb.conf`** | [`config/boards/shields/jkb/jkb.conf`](config/boards/shields/jkb/jkb.conf) | Arquivo de referência de configurações gerais e opções de RGB/Display comentadas. |
 
 ```text
 zmk-config-JaquesKB/
 ├── .github/workflows/
-│   └── build.yml                          # Pipeline do GitHub Actions para compilar o firmware (.uf2)
+│   └── build.yml
 ├── config/
-│   ├── boards/shields/corne/              # Definições de hardware do shield customizado (Jkb)
-│   │   ├── Kconfig.defconfig              # Define nome padrão "Jkb" e papel Central no lado esquerdo
-│   │   ├── Kconfig.shield                 # Registra os shields jkb_left e jkb_right
-│   │   ├── jkb.conf                       # Configurações globais (Sleep, Timeout, TX Power, HID)
-│   │   ├── jkb.dtsi                       # Matriz lógica (5x13) e transformação de coordenadas RC(row,col)
-│   │   ├── jkb_left.conf                  # Configurações específicas da metade esquerda
-│   │   ├── jkb_left.overlay               # Pinagem (GPIO) das 6 colunas e 5 linhas da esquerda
-│   │   ├── jkb_right.conf                 # Configurações específicas da metade direita
-│   │   └── jkb_right.overlay              # Pinagem (GPIO) das 7 colunas e 5 linhas da direita + offset
-│   ├── jkb.keymap                         # Mapa de teclas (Layers 0, 1 e 2) adaptado para ABNT2
-│   └── west.yml                           # Manifesto do West apontando para o repositório oficial do ZMK
+│   ├── boards/shields/jkb/
+│   │   ├── Kconfig.defconfig
+│   │   ├── Kconfig.shield
+│   │   ├── jkb.conf
+│   │   ├── jkb.dtsi
+│   │   ├── jkb_left.conf
+│   │   ├── jkb_left.overlay
+│   │   ├── jkb_right.conf
+│   │   └── jkb_right.overlay
+│   ├── jkb.keymap
+│   └── west.yml
 ├── zephyr/
-│   └── module.yml                         # Declaração de módulo Zephyr para encontrar os shields locais
-└── build.yaml                             # Matriz de compilação (jkb_left, jkb_right e settings_reset)
+│   └── module.yml
+├── build.yaml
+└── README.md
 ```
 
 ---
 
 ## 3. Funcionamento do Hardware e Matriz de Pinos
 
-A leitura das teclas utiliza o driver `zmk,kscan-gpio-matrix` com diodos no sentido `col2row` (as colunas são acionadas em nível alto `GPIO_ACTIVE_HIGH` e as linhas possuem *pull-down* interno `GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN`).
+A leitura das teclas é configurada em [`jkb.dtsi`](config/boards/shields/jkb/jkb.dtsi) utilizando o driver `zmk,kscan-gpio-matrix` com diodos no sentido `col2row` (as colunas são acionadas em nível alto `GPIO_ACTIVE_HIGH` e as linhas possuem *pull-down* interno `GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN`).
 
-### 3.1. Pinagem do Lado Esquerdo (`jkb_left.overlay`)
+### 3.1. Pinagem do Lado Esquerdo ([`jkb_left.overlay`](config/boards/shields/jkb/jkb_left.overlay))
 O lado esquerdo possui **6 colunas x 5 linhas = 30 teclas**, mapeadas nas colunas lógicas `0` a `5`:
 
 | Função na Matriz | Índice Lógico | Pino `pro_micro` | Configuração GPIO |
@@ -57,7 +89,7 @@ O lado esquerdo possui **6 colunas x 5 linhas = 30 teclas**, mapeadas nas coluna
 | **Colunas (0 a 5)** | `Col 0` → `Col 5` | `7`, `6`, `5`, `4`, `3`, `2` | `GPIO_ACTIVE_HIGH` |
 | **Linhas (0 a 4)** | `Row 0` → `Row 4` | `20`, `19`, `18`, `15`, `14` | `GPIO_ACTIVE_HIGH \| GPIO_PULL_DOWN` |
 
-### 3.2. Pinagem do Lado Direito (`jkb_right.overlay`)
+### 3.2. Pinagem do Lado Direito ([`jkb_right.overlay`](config/boards/shields/jkb/jkb_right.overlay))
 O lado direito aplica um deslocamento de 6 colunas (`col-offset = <6>`) e utiliza **7 colunas x 5 linhas**, ocupando as colunas lógicas `6` a `12` para totalizar **30 teclas**:
 - As linhas `0` e `1` usam 6 teclas cada (`Col 7` a `Col 12`).
 - As linhas `2` e `3` usam 7 teclas cada (`Col 6` a `Col 12`, adicionando 2 teclas internas extras próximas ao centro).
@@ -68,7 +100,7 @@ O lado direito aplica um deslocamento de 6 colunas (`col-offset = <6>`) e utiliz
 | **Colunas (6 a 12)** | `Col 6` → `Col 12` | `9`, `8`, `7`, `6`, `21`, `20`, `19` | `GPIO_ACTIVE_HIGH` |
 | **Linhas (0 a 4)** | `Row 0` → `Row 4` | `18`, `15`, `14`, `16`, `10` | `GPIO_ACTIVE_HIGH \| GPIO_PULL_DOWN` |
 
-### 3.3. Mapa Físico de Coordenadas (`jkb.dtsi`)
+### 3.3. Mapa Físico de Coordenadas ([`jkb.dtsi`](config/boards/shields/jkb/jkb.dtsi))
 
 ```text
 LADO ESQUERDO (30 teclas)                                       LADO DIREITO (30 teclas)
@@ -87,7 +119,9 @@ LADO ESQUERDO (30 teclas)                                       LADO DIREITO (30
 
 ---
 
-## 4. Funcionamento do Keymap (`config/jkb.keymap`)
+## 4. Funcionamento do Keymap (Layers 0, 1 e 2)
+
+Arquivo de definição: [`config/jkb.keymap`](config/jkb.keymap)
 
 O keymap utiliza os códigos padrão do ZMK combinados com o layout **ABNT2** configurado no sistema operacional. Abaixo está a tabela de equivalência dos códigos especiais para ABNT2 usados na camada base:
 
@@ -104,8 +138,8 @@ O keymap utiliza os códigos padrão do ZMK combinados com o layout **ABNT2** co
 
 ---
 
-### Layer 0: Base (`default_layer`)
-Camada principal de digitação. Possui acesso momentâneo para a **Layer 1** (`&mo 1`, no polegar esquerdo) e para a **Layer 2** (`&mo 2`, na tecla interna inferior do lado direito).
+### Layer 0: Base (`default_layer` em [`jkb.keymap`](config/jkb.keymap))
+Camada principal de digitação. Possui acesso momentâneo para a **Layer 1** (`&mo 1`, no polegar esquerdo `RC(4,4)`) e para a **Layer 2** (`&mo 2`, na tecla interna inferior do lado direito `RC(3,6)`).
 
 ```text
 LADO ESQUERDO                                                   LADO DIREITO
@@ -124,7 +158,7 @@ LADO ESQUERDO                                                   LADO DIREITO
 
 ---
 
-### Layer 1: Navegação e Numpad (`lower_layer`)
+### Layer 1: Navegação e Numpad (`lower_layer` em [`jkb.keymap`](config/jkb.keymap))
 Ativada enquanto segura **`MO(1)`**. Transforma o `W A S D` em setas direcionais na mão esquerda e ativa um **Teclado Numérico (Numpad)** completo na mão direita.
 
 ```text
@@ -145,83 +179,51 @@ LADO ESQUERDO                                                   LADO DIREITO
 
 ---
 
-### Layer 2: Bluetooth e Mídia (`raise_layer`)
-Ativada enquanto segura **`MO(2)`**. No estado atual, a estrutura da camada já está declarada no código, mas todas as teclas estão como `&trans` (aguardando mapeamento dos controles de Bluetooth e mídia).
+### Layer 2: Bluetooth, Mídia e Funções (`raise_layer` em [`jkb.keymap`](config/jkb.keymap))
+Ativada enquanto segura **`MO(2)`**:
+- **Linha Superior (`Row 0`):** Teclas de função **`F1` a `F6`** na mão esquerda e **`F7` a `F12`** na mão direita.
+- **Gerenciamento Bluetooth (Mão Esquerda, `Row 1`):** `BT_CLR` (limpa o pareamento do perfil ativo) e `BT_SEL 0` a `BT_SEL 4` (alterna entre até 5 dispositivos pareados).
+- **Mídia e Sistema (Mão Direita, `Row 1` e `Row 2`):** Faixa Anterior (`C_PREV`), Play/Pause (`C_PP`), Próxima Faixa (`C_NEXT`), Print Screen (`PSCRN`), Mudo (`C_MUTE`), Volume - (`C_VOL_DN`) e Volume + (`C_VOL_UP`).
+- **Manutenção de Firmware (`Row 3`, cantos externos):** `&bootloader` (entra em modo de gravação UF2 pela própria tecla, sem precisar abrir o case para apertar o botão físico) e `&sys_reset` (reinicia a controladora daquele lado).
+
+```text
+LADO ESQUERDO                                                   LADO DIREITO
+┌───────┬───────┬───────┬───────┬───────┬───────┐               ┌───────┬───────┬───────┬───────┬───────┬───────┐
+│  F1   │  F2   │  F3   │  F4   │  F5   │  F6   │               │  F7   │  F8   │  F9   │  F10  │  F11  │  F12  │
+├───────┼───────┼───────┼───────┼───────┼───────┤               ├───────┼───────┼───────┼───────┼───────┼───────┤
+│BT_CLR │ BT 0  │ BT 1  │ BT 2  │ BT 3  │ BT 4  │               │       │ PREV  │PLAY/PS│ NEXT  │ PSCRN │       │
+├───────┼───────┼───────┼───────┼───────┼───────┤       ┌───────┼───────┼───────┼───────┼───────┼───────┼───────┤
+│       │       │       │       │       │       │       │       │       │ MUTE  │ VOL - │ VOL + │       │       │
+├───────┼───────┼───────┼───────┼───────┼───────┤       ├───────┼───────┼───────┼───────┼───────┼───────┼───────┤
+│ BOOT  │ RESET │       │       │       │       │       │ MO(2) │       │       │       │       │ RESET │ BOOT  │
+├───────┼───────┼───────┼───────┼───────┼───────┤       └───────┼───────┼───────┼───────┼───────┼───────┴───────┘
+│       │       │       │       │ MO(1) │       │               │       │       │       │       │
+└───────┴───────┴───────┴───────┴───────┴───────┘               └───────┴───────┴───────┴───────┘
+(Células em branco = &trans, herdam o comportamento da Layer 0)
+```
 
 ---
 
-## 5.Ponto Atual do Projeto (Status)
+## 5. Ponto Atual do Projeto (Status)
 
-### O que já está pronto e funcional:
-- [x] Definição completa da matriz de 60 teclas (`5x13`) e mapeamento de GPIOs de ambas as metades (`jkb_left` e `jkb_right`).
-- [x] Pipeline de CI/CD no GitHub Actions gerando automaticamente os 3 arquivos `.uf2`: `jkb_left`, `jkb_right` e `settings_reset`.
-- [x] Renomeação dos artefatos e do dispositivo Bluetooth de `Corne` para `Jkb`.
-- [x] Camada Base (Layer 0) ajustada e funcional para digitação no padrão brasileiro **ABNT2** (incluindo `Ç`, acentos, `/ ?`, `\ |`, colchetes e chaves).
-- [x] Camada Secundária (Layer 1) funcional com setas no `WASD` e bloco numérico (Numpad) completo no lado direito.
-- [x] Potência do rádio Bluetooth amplificada (`+8 dBm`) e suporte a modo de economia de energia (`CONFIG_ZMK_SLEEP=y`).
-
-### O que falta finalizar / Próximos passos planejados:
-- [ ] Popular a **Layer 2 (`raise_layer`)** com comandos de gerenciamento de Bluetooth (`BT_CLR`, troca de perfis `BT_SEL`), teclas de função (`F1`–`F12`) e controles de mídia/volume.
+- [x] Definição completa da matriz de 60 teclas (`5x13`) em [`jkb.dtsi`](config/boards/shields/jkb/jkb.dtsi) e mapeamento de GPIOs em [`jkb_left.overlay`](config/boards/shields/jkb/jkb_left.overlay) e [`jkb_right.overlay`](config/boards/shields/jkb/jkb_right.overlay).
+- [x] Estrutura do shield padronizada em [`config/boards/shields/jkb/`](config/boards/shields/jkb/) com [`Kconfig.shield`](config/boards/shields/jkb/Kconfig.shield) e [`Kconfig.defconfig`](config/boards/shields/jkb/Kconfig.defconfig) revisados.
+- [x] Pipeline de CI/CD em [`.github/workflows/build.yml`](.github/workflows/build.yml) e [`build.yaml`](build.yaml) compilando para `nice_nano_v2` (`jkb_left`, `jkb_right` e `settings_reset`).
+- [x] **Layer 0 (Base)** ajustada e funcional para digitação no padrão brasileiro **ABNT2** em [`config/jkb.keymap`](config/jkb.keymap).
+- [x] **Layer 1 (Navegação e Numpad)** funcional com setas no `WASD` e bloco numérico completo no lado direito.
+- [x] **Layer 2 (Bluetooth, Mídia e Funções)** preenchida com `F1`–`F12`, seleção/limpeza de perfis Bluetooth (`BT_SEL 0..4`, `BT_CLR`), controles de mídia/volume, `PSCRN`, `&bootloader` e `&sys_reset`.
+- [x] Potência do rádio Bluetooth amplificada (`+8 dBm`) e timeouts de economia de energia sincronizados em [`jkb_left.conf`](config/boards/shields/jkb/jkb_left.conf) e [`jkb_right.conf`](config/boards/shields/jkb/jkb_right.conf).
 
 ---
 
 ## 6. Como Compilar e Gravar o Firmware
 
-1. **Gerar o Firmware:**
-   - A cada *push* no GitHub (ou executando manualmente na aba **Actions** → *Build ZMK firmware*), o GitHub compila e disponibiliza um arquivo `firmware.zip` nos *Artifacts* da execução.
-2. **Gravar nas Controladoras (`nice!nano`):**
-   - Conecte uma das metades ao PC via cabo USB e pressione duas vezes rapidamente o botão **RST** (Reset).
+1. **Gerar o Firmware ([`build.yml`](.github/workflows/build.yml)):**
+   - A cada *push* no GitHub (ou executando manualmente na aba **Actions** → *Build ZMK firmware*), o GitHub compila as configurações definidas em [`build.yaml`](build.yaml) e disponibiliza o pacote `firmware.zip` nos *Artifacts* da execução.
+2. **Gravar nas Controladoras (`nice!nano v2`):**
+   - Conecte uma das metades ao PC via cabo USB e entre no modo Bootloader (segurando `MO(2)` + tecla do canto inferior externo `BOOT`, ou pressionando duas vezes o botão físico **RST** na placa).
    - Uma unidade USB chamada `NICENANO` aparecerá no computador.
-   - Copie o arquivo `jkb_left-nice_nano-zmk.uf2` para a controladora esquerda e `jkb_right-nice_nano-zmk.uf2` para a direita.
+   - Copie o arquivo `jkb_left-nice_nano_v2-zmk.uf2` para a controladora esquerda e `jkb_right-nice_nano_v2-zmk.uf2` para a direita.
 3. **Caso as metades percam a sincronia (Pareamento Split):**
-   - Grave primeiro o arquivo `settings_reset-nice_nano-zmk.uf2` em **ambas** as controladoras para limpar a memória flash Bluetooth.
+   - Grave primeiro o arquivo `settings_reset-nice_nano_v2-zmk.uf2` em **ambas** as controladoras para limpar a memória flash Bluetooth.
    - Em seguida, grave novamente o `jkb_left` e o `jkb_right` e ligue as duas metades próximas uma da outra.
-
----
-
-## 7. Avaliação Técnica do Código e Lista de Melhorias Sugeridas
-
-> **Nota:** Nenhum arquivo de código foi alterado. Abaixo estão os pontos levantados na revisão técnica do código atual para que você possa avaliar se e quando deseja aplicá-los.
-
-### 1. Espaço após a vírgula em `Kconfig.shield` (Importante)
-- **Onde:** `config/boards/shields/corne/Kconfig.shield`
-- **Como está hoje:**
-  ```kconfig
-  config SHIELD_JKB_LEFT
-      def_bool $(shields_list_contains, jkb_left)
-
-  config SHIELD_JKB_RIGHT
-      def_bool $(shields_list_contains, jkb_right)
-  ```
-- **O que acontece:** No pre-processador Kconfig do Zephyr, o espaço após a vírgula faz com que a macro procure pelo texto `" jkb_left"` (com espaço no início) em vez de `"jkb_left"`. Isso pode fazer com que `SHIELD_JKB_LEFT` e `SHIELD_JKB_RIGHT` retornem falso durante o build, fazendo o `Kconfig.defconfig` ser ignorado silenciosamente.
-- **Sugestão:** Remover o espaço após a vírgula: `$(shields_list_contains,jkb_left)` e `$(shields_list_contains,jkb_right)`.
-
-### 2. Configurações de `jkb.conf` vs `jkb_left.conf` / `jkb_right.conf`
-- **Onde:** `config/boards/shields/corne/jkb.conf`, `jkb_left.conf` e `jkb_right.conf`
-- **Como está hoje:** Os tempos de inatividade (`CONFIG_ZMK_IDLE_TIMEOUT=30000` e `CONFIG_ZMK_IDLE_SLEEP_TIMEOUT=900000`) estão declarados apenas em `jkb.conf`, mas não estão em `jkb_left.conf` nem em `jkb_right.conf`.
-- **O que acontece:** No ZMK, quando você compila o shield `jkb_left`, o sistema busca automaticamente por `<nome_do_shield>.conf` (ou seja, `jkb_left.conf`). O arquivo `jkb.conf` só é carregado automaticamente se oKconfig ou o nome base casar, ou se você centralizar tudo em `config/jkb.conf` (na mesma pasta do `jkb.keymap`).
-- **Sugestão:** Mover o `jkb.conf` para `config/jkb.conf` (junto ao `jkb.keymap`) ou copiar os parâmetros de `IDLE_TIMEOUT` e `IDLE_SLEEP_TIMEOUT` para `jkb_left.conf` e `jkb_right.conf`.
-
-### 3. Preenchimento da Layer 2 (`raise_layer`) em `config/jkb.keymap`
-- **Onde:** `config/jkb.keymap` (linhas 38 a 47)
-- **Como está hoje:** O header `#include <dt-bindings/zmk/bt.h>` já está incluído no topo do arquivo, mas a `raise_layer` inteira está preenchida apenas com `&trans`.
-- **Sugestão:** Adicionar na `raise_layer`:
-  - **Bluetooth:** `&bt BT_CLR` (limpar perfil atual) e `&bt BT_SEL 0`, `&bt BT_SEL 1`, `&bt BT_SEL 2` (alternar entre até 3 computadores/dispositivos pareados).
-  - **Teclas de Função:** `&kp F1` até `&kp F12` (por exemplo, na primeira linha onde ficam os números na Layer 0).
-  - **Mídia:** `&kp C_VOL_DN`, `&kp C_VOL_UP`, `&kp C_MUTE`, `&kp C_PP` (Play/Pause).
-  - **Bootloader via Teclado (Opcional, mas muito útil):** `&bootloader` em ambos os lados para entrar em modo de gravação `.uf2` sem precisar apertar duas vezes o botão físico da placa.
-
-### 4. Versão da placa no `build.yaml` (`nice_nano` vs `nice_nano_v2`)
-- **Onde:** `build.yaml`
-- **Como está hoje:** `board: nice_nano`
-- **O que avaliar:** No ZMK, `nice_nano` refere-se à versão 1.0 original da placa, enquanto a maioria das placas comercializadas atualmente (incluindo clones nRF52840 Pro Micro) usa a pinagem de controle de bateria/energia da `nice_nano_v2`. Se já está funcionando perfeitamente para o seu hardware atual, não precisa mudar; mas caso note algum comportamento estranho na medição de bateria ou alimentação de periféricos futuros, vale testar `nice_nano_v2`.
-
-### 5. Organização do nome da pasta do Shield (Estético)
-- **Onde:** `config/boards/shields/corne/`
-- **Como está hoje:** Todos os arquivos já foram renomeados para `jkb*`, mas a pasta pai ainda se chama `corne`.
-- **Sugestão:** Como o Zephyr lê todas as subpastas de `shields/` independentemente do nome do diretório, renomear a pasta `config/boards/shields/corne/` para `config/boards/shields/jkb/` não afeta o funcionamento do código e deixa a organização do repositório 100% consistente com o nome do projeto.
-
-### 6. Posicionamento da tecla `B` e do `&mo 2` (Ergonomia / Layout)
-- **Onde:** `config/jkb.keymap` (linha 21)
-- **Como está hoje:** Na linha do `Z X C V`, a 6ª tecla da mão esquerda (`RC(3,5)`) está mapeada como `&kp NUBS` (`\ |`), enquanto a letra `B` foi deslocada para a mão direita (`RC(3,7)`), logo depois da tecla `&mo 2` (`RC(3,6)`). Além disso, o comentário da Layer 2 diz `/* LAYER 2: BLUETOOTH E MEDIA (Polegar Esquerda) */`, porém o atalho `&mo 2` está fisicamente no lado direito (`RC(3,6)`).
-- **Sugestão:** Se você já se acostumou com o `B` na mão direita, ótimo! Caso contrário, pode avaliar trocar a posição do `B` de volta para a mão esquerda ou ajustar os comentários das layers para refletirem a posição real dos botões.

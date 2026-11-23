@@ -226,20 +226,7 @@ LADO ESQUERDO (Disposição Física)                                       LADO 
 
 ---
 
-## 5. Ponto Atual do Projeto (Status)
-
-- [x] Definição completa da matriz de 60 teclas (`5x13`) em [`jkb.dtsi`](config/boards/shields/jkb/jkb.dtsi) e mapeamento de GPIOs em [`jkb_left.overlay`](config/boards/shields/jkb/jkb_left.overlay) e [`jkb_right.overlay`](config/boards/shields/jkb/jkb_right.overlay).
-- [x] Documentação da equivalência entre a **disposição física espelhada** das metades e a **matriz lógica** de linhas e colunas.
-- [x] Estrutura do shield padronizada em [`config/boards/shields/jkb/`](config/boards/shields/jkb/) com [`Kconfig.shield`](config/boards/shields/jkb/Kconfig.shield) e [`Kconfig.defconfig`](config/boards/shields/jkb/Kconfig.defconfig) revisados.
-- [x] Pipeline de CI/CD em [`.github/workflows/build.yml`](.github/workflows/build.yml) e [`build.yaml`](build.yaml) compilando para `nice_nano//zmk` (`jkb_left`, `jkb_right` e `settings_reset`).
-- [x] **Layer 0 (Base)** otimizada ergonomicamente para **ABNT2** em [`config/jkb.keymap`](config/jkb.keymap) (alinhamento natural de `B`, `N`, `M`, `,`, `.`, `; :` e segundo `BSPC` no polegar direito).
-- [x] **Layer 1 (Navegação e Numpad)** com setas ergonômicas em `ESDF` + `HOME`/`END`/`PG_UP`/`PG_DN`/`CAPS` na mão esquerda e bloco numérico completo na mão direita.
-- [x] **Layer 2 (Bluetooth, Mídia e Funções)** preenchida com `F1`–`F12`, seleção/limpeza de perfis Bluetooth (`BT_SEL 0..4`, `BT_CLR`), controles de mídia/volume, `PSCRN`, `&bootloader` e `&sys_reset`.
-- [x] Potência do rádio Bluetooth amplificada (`+8 dBm`) e timeouts de economia de energia sincronizados em [`jkb_left.conf`](config/boards/shields/jkb/jkb_left.conf) e [`jkb_right.conf`](config/boards/shields/jkb/jkb_right.conf).
-
----
-
-## 6. Como Compilar e Gravar o Firmware
+## 5. Como Compilar e Gravar o Firmware
 
 1. **Gerar o Firmware ([`build.yml`](.github/workflows/build.yml)):**
    - A cada *push* no GitHub (ou executando manualmente na aba **Actions** → *Build ZMK firmware*), o GitHub compila as configurações definidas em [`build.yaml`](build.yaml) e disponibiliza o pacote `firmware.zip` nos *Artifacts* da execução.

@@ -12,24 +12,24 @@
     keymap {
         compatible = "zmk,keymap";
 
-        /* LAYER 0: BASE */
+        /* LAYER 0: BASE (ABNT2 Otimizado) */
         default_layer {
             bindings = <
                 &kp ESC     &kp N1    &kp N2    &kp N3    &kp N4    &kp N5                   &kp N6     &kp N7     &kp N8     &kp N9     &kp N0     &kp BSPC
                 &kp TAB     &kp Q     &kp W     &kp E     &kp R     &kp T                    &kp Y      &kp U      &kp I      &kp O      &kp P      &kp DEL
                 &kp LSHIFT  &kp A     &kp S     &kp D     &kp F     &kp G          &kp BSLH  &kp H      &kp J      &kp K      &kp L      &kp SEMI   &kp LBKT 
-                &kp LCTRL   &kp Z     &kp X     &kp C     &kp V     &kp NUBS       &mo 2     &kp B      &kp N      &kp M      &kp FSLH   &kp INT1   &kp SQT 
-                &kp RWIN    &kp LALT  &kp CAPS  &kp SPACE &mo 1     &kp RBKT                 &kp ENTER  &kp RALT   &kp COMMA  &kp DOT          
+                &kp LCTRL   &kp Z     &kp X     &kp C     &kp V     &kp B          &mo 2     &kp N      &kp M      &kp COMMA  &kp DOT    &kp FSLH   &kp SQT 
+                &kp LWIN    &kp LALT  &kp NUBS  &kp SPACE &mo 1     &kp RBKT                 &kp ENTER  &kp BSPC   &kp INT1   &kp RALT          
 
             >; 
         };
 
-        /* LAYER 1: NAVEGACAO E NUMPAD (Polegar Esquerdo) */
+        /* LAYER 1: NAVEGACAO ESDF E NUMPAD (Polegar Esquerdo) */
         lower_layer {
             bindings = <
                 &trans     &trans    &trans    &trans    &trans    &trans                    &trans    &trans        &kp KP_DIVIDE   &kp KP_MULTIPLY    &trans          &trans
-                &trans     &trans    &kp UP    &trans    &trans    &trans                    &trans    &kp KP_N7     &kp KP_N8       &kp KP_N9          &kp KP_MINUS    &trans
-                &trans     &kp LEFT  &kp DOWN  &kp RIGHT &trans    &trans          &trans    &trans    &kp KP_N4     &kp KP_N5       &kp KP_N6          &kp KP_PLUS     &trans 
+                &trans     &kp CAPS  &kp HOME  &kp UP    &kp END   &kp PG_UP                 &trans    &kp KP_N7     &kp KP_N8       &kp KP_N9          &kp KP_MINUS    &trans
+                &trans     &trans    &kp LEFT  &kp DOWN  &kp RIGHT &kp PG_DN       &trans    &trans    &kp KP_N4     &kp KP_N5       &kp KP_N6          &kp KP_PLUS     &trans 
                 &trans     &trans    &trans    &trans    &trans    &trans          &mo 2     &trans    &kp KP_N1     &kp KP_N2       &kp KP_N3          &kp KP_DOT      &trans 
                 &trans     &trans    &trans    &trans    &mo 1     &trans                    &trans    &kp KP_N0     &kp KP_COMMA    &kp KP_ENTER    
             >;

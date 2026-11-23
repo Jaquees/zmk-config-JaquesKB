@@ -1,6 +1,6 @@
 # JaquesKB (Jkb) — Firmware ZMK
 
-Repositório de configuração e documentação do firmware **ZMK (Zephyr Mechanical Keyboard)** para o **JaquesKB (`Jkb`)**, um teclado mecânico ergonômico *split* (dividido em duas metades) sem fio, projetado sob medida com layout adaptado para **ABNT2 (Português - Brasil)**.
+Repositório de configuração e documentação do firmware **ZMK (Zephyr Mechanical Keyboard)** para o **JaquesKB (`Jkb`)**, um teclado mecânico ergonômico *split* (dividido em duas metades) sem fio, projetado sob medida com layout adaptado e otimizado ergonomicamente para **ABNT2 (Português - Brasil)**.
 
 ---
 
@@ -19,8 +19,8 @@ Repositório de configuração e documentação do firmware **ZMK (Zephyr Mechan
 O **JaquesKB (`Jkb`)** é um teclado mecânico dividido de **60 teclas** (30 teclas no lado esquerdo + 30 teclas no lado direito), construído com uma matriz lógica de **5 linhas por 13 colunas** ([`jkb.dtsi`](config/boards/shields/jkb/jkb.dtsi)).
 
 ### Especificações Principais
-- **Firmware:** [ZMK Firmware](https://zmk.dev/) (baseado no RTOS Zephyr, configurado em [`config/west.yml`](config/west.yml))
-- **Controladoras:** 2x `nice_nano_v2` (nRF52840) — comunicação sem fio via Bluetooth (BLE), definidas em [`build.yaml`](build.yaml)
+- **Firmware:** [ZMK Firmware](https://zmk.dev/) (baseado no RTOS Zephyr 4.1 / HWMv2, configurado em [`config/west.yml`](config/west.yml))
+- **Controladoras:** 2x `nice_nano//zmk` (nice!nano v2 / nRF52840) — comunicação sem fio via Bluetooth (BLE), definidas em [`build.yaml`](build.yaml)
 - **Topologia Split ([`Kconfig.defconfig`](config/boards/shields/jkb/Kconfig.defconfig)):**
   - **Lado Esquerdo (`jkb_left`):** Central (Mestre) — conecta-se ao computador via USB ou Bluetooth e recebe os sinais do lado direito.
   - **Lado Direito (`jkb_right`):** Periférico (Escravo) — envia os pressionamentos de tecla via BLE para o lado esquerdo.
@@ -40,10 +40,10 @@ Clique em qualquer arquivo na tabela abaixo para abrir diretamente o código cor
 | Arquivo | Caminho no Repositório | Função no Projeto |
 | :--- | :--- | :--- |
 | **`build.yml`** | [`.github/workflows/build.yml`](.github/workflows/build.yml) | Pipeline do GitHub Actions para compilar automaticamente os arquivos `.uf2`. |
-| **`build.yaml`** | [`build.yaml`](build.yaml) | Matriz de compilação (`nice_nano_v2` + `jkb_left`, `jkb_right` e `settings_reset`). |
+| **`build.yaml`** | [`build.yaml`](build.yaml) | Matriz de compilação (`nice_nano//zmk` + `jkb_left`, `jkb_right` e `settings_reset`). |
 | **`module.yml`** | [`zephyr/module.yml`](zephyr/module.yml) | Declaração de módulo do Zephyr para localizar os shields customizados na raiz. |
 | **`west.yml`** | [`config/west.yml`](config/west.yml) | Manifesto do West que importa a versão principal do ZMK Firmware. |
-| **`jkb.keymap`** | [`config/jkb.keymap`](config/jkb.keymap) | Mapa de teclas completo (Layers 0, 1 e 2) adaptado para ABNT2. |
+| **`jkb.keymap`** | [`config/jkb.keymap`](config/jkb.keymap) | Mapa de teclas completo (Layers 0, 1 e 2) adaptado e otimizado para ABNT2. |
 | **`Kconfig.shield`** | [`config/boards/shields/jkb/Kconfig.shield`](config/boards/shields/jkb/Kconfig.shield) | Registra os identificadores dos shields `SHIELD_JKB_LEFT` e `SHIELD_JKB_RIGHT`. |
 | **`Kconfig.defconfig`** | [`config/boards/shields/jkb/Kconfig.defconfig`](config/boards/shields/jkb/Kconfig.defconfig) | Define o nome `"Jkb"`, ativa `ZMK_SPLIT` e define o lado esquerdo como Central. |
 | **`jkb.dtsi`** | [`config/boards/shields/jkb/jkb.dtsi`](config/boards/shields/jkb/jkb.dtsi) | Define a matriz lógica (`5x13`), direção dos diodos (`col2row`) e coordenadas `RC(row,col)`. |
@@ -127,19 +127,22 @@ O keymap utiliza os códigos padrão do ZMK combinados com o layout **ABNT2** co
 
 | Código no ZMK | Caractere no S.O. (ABNT2) | Posição no Teclado |
 | :--- | :---: | :--- |
-| `&kp SEMI` | **`Ç`** | Ao lado da tecla `L` |
-| `&kp LBKT` | **`´` / `` ` ``** (Acento agudo / Crase) | Extrema direita da linha do `A S D F` |
-| `&kp SQT` | **`~` / `^`** (Til / Circunflexo) | Extrema direita da linha do `Z X C V` |
-| `&kp BSLH` | **`]` / `}`** | Tecla interna extra superior direita `RC(2,6)` |
-| `&kp RBKT` | **`[` / `{`** | Última tecla inferior esquerda `RC(4,5)` |
-| `&kp NUBS` | **`\` / `\|`** | Ao lado da tecla `V` na esquerda `RC(3,5)` |
-| `&kp FSLH` | **`;` / `:`** | Ao lado da tecla `M` |
-| `&kp INT1` | **`/` / `?`** | Ao lado de `; :` na linha inferior alfabética |
+| `&kp SEMI` | **`Ç`** | Ao lado da tecla `L` (`RC(2,11)`) |
+| `&kp LBKT` | **`´` / `` ` ``** (Acento agudo / Crase) | Extrema direita da linha do `A S D F` (`RC(2,12)`) |
+| `&kp SQT` | **`~` / `^`** (Til / Circunflexo) | Extrema direita da linha do `Z X C V` (`RC(3,12)`) |
+| `&kp BSLH` | **`]` / `}`** | Tecla interna extra superior direita (`RC(2,6)`) |
+| `&kp RBKT` | **`[` / `{`** | Última tecla inferior esquerda (`RC(4,5)`) |
+| `&kp NUBS` | **`\` / `\|`** | Linha inferior esquerda ao lado de `LALT` (`RC(4,2)`) |
+| `&kp FSLH` | **`;` / `:`** | Ao lado do ponto `.` na linha alfabética inferior (`RC(3,11)`) |
+| `&kp INT1` | **`/` / `?`** | Linha inferior direita ao lado de `BSPC` (`RC(4,9)`) |
 
 ---
 
-### Layer 0: Base (`default_layer` em [`jkb.keymap`](config/jkb.keymap))
-Camada principal de digitação. Possui acesso momentâneo para a **Layer 1** (`&mo 1`, no polegar esquerdo `RC(4,4)`) e para a **Layer 2** (`&mo 2`, na tecla interna inferior do lado direito `RC(3,6)`).
+### Layer 0: Base ABNT2 Otimizada (`default_layer` em [`jkb.keymap`](config/jkb.keymap))
+Camada principal de digitação otimizada ergonomicamente:
+- **Alinhamento Alfabético e de Pontuação:** `B` posicionado na mão esquerda (`RC(3,5)`), mantendo `N`, `M`, `,`, `.` e `; :` alinhados na linha 3 da mão direita.
+- **Duplo `Backspace`:** Disponível tanto no canto superior direito (`RC(0,12)`) quanto no cluster do polegar direito (`RC(4,8)`, ao lado do `ENTER`), reduzindo o esforço repetitivo do dedo mínimo direito.
+- **Ativadores de Camada:** Acesso momentâneo para a **Layer 1** (`&mo 1`, no polegar esquerdo `RC(4,4)`) e para a **Layer 2** (`&mo 2`, na tecla interna do lado direito `RC(3,6)`).
 
 ```text
 LADO ESQUERDO                                                   LADO DIREITO
@@ -150,25 +153,27 @@ LADO ESQUERDO                                                   LADO DIREITO
 ├───────┼───────┼───────┼───────┼───────┼───────┤       ┌───────┼───────┼───────┼───────┼───────┼───────┼───────┤
 │LSHIFT │   A   │   S   │   D   │   F   │   G   │       │  ] }  │   H   │   J   │   K   │   L   │   Ç   │  ´ `  │
 ├───────┼───────┼───────┼───────┼───────┼───────┤       ├───────┼───────┼───────┼───────┼───────┼───────┼───────┤
-│ LCTRL │   Z   │   X   │   C   │   V   │  \ |  │       │ MO(2) │   B   │   N   │   M   │  ; :  │  / ?  │  ~ ^  │
+│ LCTRL │   Z   │   X   │   C   │   V   │   B   │       │ MO(2) │   N   │   M   │   ,   │   .   │  ; :  │  ~ ^  │
 ├───────┼───────┼───────┼───────┼───────┼───────┤       └───────┼───────┼───────┼───────┼───────┼───────┴───────┘
-│ RWIN  │ LALT  │ CAPS  │ SPACE │ MO(1) │  [ {  │               │ ENTER │ RALT  │   ,   │   .   │
+│ LWIN  │ LALT  │  \ |  │ SPACE │ MO(1) │  [ {  │               │ ENTER │ BSPC  │  / ?  │ RALT  │
 └───────┴───────┴───────┴───────┴───────┴───────┘               └───────┴───────┴───────┴───────┘
 ```
 
 ---
 
-### Layer 1: Navegação e Numpad (`lower_layer` em [`jkb.keymap`](config/jkb.keymap))
-Ativada enquanto segura **`MO(1)`**. Transforma o `W A S D` em setas direcionais na mão esquerda e ativa um **Teclado Numérico (Numpad)** completo na mão direita.
+### Layer 1: Navegação `ESDF` e Numpad (`lower_layer` em [`jkb.keymap`](config/jkb.keymap))
+Ativada enquanto segura **`MO(1)`**:
+- **Navegação `ESDF` na Mão Esquerda:** Setas direcionais alinhadas sobre a *Home Row* (`E` = Cima, `S` = Esquerda, `D` = Baixo, `F` = Direita), mantendo o indicador sobre a referência tátil da tecla `F`. Inclui `HOME` (`W`), `END` (`R`), `PG_UP` (`T`), `PG_DN` (`G`) e `CAPS` (`Q`).
+- **Numpad Completo na Mão Direita:** Bloco numérico completo com operadores (`+`, `-`, `*`, `/`, `.`, `,` e `KP_ENTER`).
 
 ```text
 LADO ESQUERDO                                                   LADO DIREITO
 ┌───────┬───────┬───────┬───────┬───────┬───────┐               ┌───────┬───────┬───────┬───────┬───────┬───────┐
 │       │       │       │       │       │       │               │       │       │  KP / │  KP * │       │       │
 ├───────┼───────┼───────┼───────┼───────┼───────┤               ├───────┼───────┼───────┼───────┼───────┼───────┤
-│       │       │  UP   │       │       │       │               │       │ KP 7  │ KP 8  │ KP 9  │  KP - │       │
+│       │ CAPS  │ HOME  │  UP   │  END  │ PG_UP │               │       │ KP 7  │ KP 8  │ KP 9  │  KP - │       │
 ├───────┼───────┼───────┼───────┼───────┼───────┤       ┌───────┼───────┼───────┼───────┼───────┼───────┼───────┤
-│       │ LEFT  │ DOWN  │ RIGHT │       │       │       │       │       │ KP 4  │ KP 5  │ KP 6  │  KP + │       │
+│       │       │ LEFT  │ DOWN  │ RIGHT │ PG_DN │       │       │       │ KP 4  │ KP 5  │ KP 6  │  KP + │       │
 ├───────┼───────┼───────┼───────┼───────┼───────┤       ├───────┼───────┼───────┼───────┼───────┼───────┼───────┤
 │       │       │       │       │       │       │       │ MO(2) │       │ KP 1  │ KP 2  │ KP 3  │ KP .  │       │
 ├───────┼───────┼───────┼───────┼───────┼───────┤       └───────┼───────┼───────┼───────┼───────┼───────┴───────┘
@@ -208,9 +213,9 @@ LADO ESQUERDO                                                   LADO DIREITO
 
 - [x] Definição completa da matriz de 60 teclas (`5x13`) em [`jkb.dtsi`](config/boards/shields/jkb/jkb.dtsi) e mapeamento de GPIOs em [`jkb_left.overlay`](config/boards/shields/jkb/jkb_left.overlay) e [`jkb_right.overlay`](config/boards/shields/jkb/jkb_right.overlay).
 - [x] Estrutura do shield padronizada em [`config/boards/shields/jkb/`](config/boards/shields/jkb/) com [`Kconfig.shield`](config/boards/shields/jkb/Kconfig.shield) e [`Kconfig.defconfig`](config/boards/shields/jkb/Kconfig.defconfig) revisados.
-- [x] Pipeline de CI/CD em [`.github/workflows/build.yml`](.github/workflows/build.yml) e [`build.yaml`](build.yaml) compilando para `nice_nano_v2` (`jkb_left`, `jkb_right` e `settings_reset`).
-- [x] **Layer 0 (Base)** ajustada e funcional para digitação no padrão brasileiro **ABNT2** em [`config/jkb.keymap`](config/jkb.keymap).
-- [x] **Layer 1 (Navegação e Numpad)** funcional com setas no `WASD` e bloco numérico completo no lado direito.
+- [x] Pipeline de CI/CD em [`.github/workflows/build.yml`](.github/workflows/build.yml) e [`build.yaml`](build.yaml) compilando para `nice_nano//zmk` (`jkb_left`, `jkb_right` e `settings_reset`).
+- [x] **Layer 0 (Base)** otimizada ergonomicamente para **ABNT2** em [`config/jkb.keymap`](config/jkb.keymap) (alinhamento natural de `B`, `N`, `M`, `,`, `.`, `; :` e segundo `BSPC` no polegar direito).
+- [x] **Layer 1 (Navegação e Numpad)** com setas ergonômicas em `ESDF` + `HOME`/`END`/`PG_UP`/`PG_DN`/`CAPS` na mão esquerda e bloco numérico completo na mão direita.
 - [x] **Layer 2 (Bluetooth, Mídia e Funções)** preenchida com `F1`–`F12`, seleção/limpeza de perfis Bluetooth (`BT_SEL 0..4`, `BT_CLR`), controles de mídia/volume, `PSCRN`, `&bootloader` e `&sys_reset`.
 - [x] Potência do rádio Bluetooth amplificada (`+8 dBm`) e timeouts de economia de energia sincronizados em [`jkb_left.conf`](config/boards/shields/jkb/jkb_left.conf) e [`jkb_right.conf`](config/boards/shields/jkb/jkb_right.conf).
 
@@ -223,7 +228,7 @@ LADO ESQUERDO                                                   LADO DIREITO
 2. **Gravar nas Controladoras (`nice!nano v2`):**
    - Conecte uma das metades ao PC via cabo USB e entre no modo Bootloader (segurando `MO(2)` + tecla do canto inferior externo `BOOT`, ou pressionando duas vezes o botão físico **RST** na placa).
    - Uma unidade USB chamada `NICENANO` aparecerá no computador.
-   - Copie o arquivo `jkb_left-nice_nano_v2-zmk.uf2` para a controladora esquerda e `jkb_right-nice_nano_v2-zmk.uf2` para a direita.
+   - Copie o arquivo `.uf2` correspondente (`jkb_left` para a controladora esquerda e `jkb_right` para a direita).
 3. **Caso as metades percam a sincronia (Pareamento Split):**
-   - Grave primeiro o arquivo `settings_reset-nice_nano_v2-zmk.uf2` em **ambas** as controladoras para limpar a memória flash Bluetooth.
+   - Grave primeiro o arquivo `settings_reset` em **ambas** as controladoras para limpar a memória flash Bluetooth.
    - Em seguida, grave novamente o `jkb_left` e o `jkb_right` e ligue as duas metades próximas uma da outra.
